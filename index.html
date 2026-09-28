@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elliptic Curve Arithmetic — Seminar Presentation</title>
+    <meta name="description" content="A comprehensive seminar presentation on Elliptic Curve Arithmetic over Real Numbers, Prime Fields Zp, and Binary Fields GF(2^m), based on Cryptography and Network Security by William Stallings.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+            options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] },
+            startup: { pageReady: () => { return MathJax.startup.defaultPageReady(); } }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <link rel="stylesheet" href="styles.css?v=light_v4">
+</head>
+<body>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter" id="slideCounter">1 / 20</div>
+
+    <!-- Navigation Arrows -->
+    <button class="nav-arrow nav-prev" id="prevBtn" aria-label="Previous slide">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="nav-arrow nav-next" id="nextBtn" aria-label="Next slide">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+
+    <!-- Slide Navigation Dots -->
+    <div class="slide-dots" id="slideDots"></div>
+
+    <!-- ==================== SLIDES ==================== -->
+    <div class="slides-container" id="slidesContainer">
+
+        <!-- ===================== SLIDE 1: TITLE ===================== -->
+        <section class="slide slide-active" id="slide-1">
+            <div class="slide-bg-decoration">
+                <div class="deco-circle deco-1"></div>
+                <div class="deco-circle deco-2"></div>
+                <div class="deco-circle deco-3"></div>
+            </div>
+            <div class="slide-content title-slide">
+                <div class="title-badge animate-in">
+                    <span class="badge-dot"></span>SEMINAR PRESENTATION
+                </div>
+                <h1 class="title-main animate-in">
+                    Elliptic Curve<br><span class="gradient-text">Arithmetic</span>
+                </h1>
+                <p class="title-sub animate-in">Mathematical Foundations, Group Laws, and Arithmetic over Finite Fields</p>
+                <div class="title-divider animate-in"></div>
+                <div class="title-meta animate-in">
+                    <span class="meta-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        Network Security
+                    </span>
+                    <span class="meta-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Semester 3
+                    </span>
+                </div>
+                <div class="presenter-card animate-in" style="margin-top:20px; display:inline-flex; align-items:center; gap:16px; background:#ffffff; border:1.5px solid var(--blue); padding:10px 24px; border-radius:100px; box-shadow:0 4px 20px rgba(37,99,235,0.12);">
+                    <div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #2563eb, #7c3aed); color:#ffffff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.05rem;">GP</div>
+                    <div style="text-align:left;">
+                        <span style="display:block; font-size:0.75rem; font-family:var(--mono); font-weight:800; color:var(--blue); letter-spacing:1.5px; text-transform:uppercase;">Presented By</span>
+                        <span style="font-size:1.1rem; font-weight:800; color:var(--text);">Guru Prakash A <span style="color:var(--text3); font-weight:600; font-size:0.95rem;">| II-MCA (Reg No: 25322011)</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 2: AGENDA ===================== -->
+        <section class="slide" id="slide-2">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">02</span>
+                    <h2>Agenda & <span class="gradient-text">Overview</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Strictly based on William Stallings' <em>Cryptography and Network Security</em> (Chapter 10: Elliptic Curve Arithmetic).</p>
+                <div class="agenda-grid">
+                    <div class="glass-card agenda-section animate-in">
+                        <div class="agenda-icon" style="--hue:220">📘</div>
+                        <h4>1. Foundations & Concepts</h4>
+                        <ul class="agenda-list">
+                            <li>Motivation: The RSA Scaling Problem</li>
+                            <li>What is an Elliptic Curve?</li>
+                            <li>Why are Elliptic Curves Used?</li>
+                            <li>Abelian Group Axioms (A1–A5)</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card agenda-section animate-in">
+                        <div class="agenda-icon" style="--hue:160">📐</div>
+                        <h4>2. Real Curves & Geometric Rules</h4>
+                        <ul class="agenda-list">
+                            <li>Elliptic Curves over Real Numbers \(\mathbb{R}\)</li>
+                            <li>The 5 Fundamental Geometric Addition Rules</li>
+                            <li>Point Doubling via Tangent Line Construction</li>
+                            <li>Algebraic Addition & Doubling Formulas</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card agenda-section animate-in">
+                        <div class="agenda-icon" style="--hue:280">🔢</div>
+                        <h4>3. Prime Curves over \(\mathbb{Z}_p\)</h4>
+                        <ul class="agenda-list">
+                            <li>Two Families: Prime vs. Binary Curves</li>
+                            <li>Curves over \(\mathbb{Z}_p\), Hasse's Theorem & Condition</li>
+                            <li>4 Formal Addition Rules & Slope Formulas</li>
+                            <li>Worked Example 1: Point Addition \(P + Q\)</li>
+                            <li>Worked Example 2: Point Doubling \(2P\)</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card agenda-section animate-in">
+                        <div class="agenda-icon" style="--hue:340">💻</div>
+                        <h4>4. Binary Curves & Scalability</h4>
+                        <ul class="agenda-list">
+                            <li>Curves over Binary Fields \(GF(2^m)\)</li>
+                            <li>4 Formal Addition Rules & Slope Formulas in \(GF(2^m)\)</li>
+                            <li>Master Comparison: \(\mathbb{Z}_p\) vs. \(GF(2^m)\)</li>
+                            <li>Scalar Multiplication & Double-and-Add Algorithm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 3: MOTIVATION ===================== -->
+        <section class="slide" id="slide-3">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">03</span>
+                    <h2>Motivation — <span class="gradient-text">Why ECC?</span></h2>
+                </div>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="glass-card content-card card-problem">
+                            <div class="card-icon red">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <h3>The Escalation of RSA Key Sizes</h3>
+                            <p>To resist factorization algorithms (like the General Number Field Sieve), RSA keys must grow exponentially large (2048 to 15360 bits):</p>
+                            <ul class="bullet-list">
+                                <li>Heavy computational bottleneck on e-commerce transaction servers</li>
+                                <li>High battery and processing drain on mobile, smart cards, and IoT sensors</li>
+                                <li>Excessive memory storage and communication payload bandwidth</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card content-card card-solution" style="margin-top:14px;">
+                            <div class="card-icon green">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            </div>
+                            <h3>The Core ECC Proposition (William Stallings)</h3>
+                            <p>"The principal attraction of ECC, compared to RSA, is that it appears to offer <strong>equal security for a far smaller key size</strong>, thereby reducing processing overhead."</p>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:20px 24px;">
+                            <h4 class="section-title" style="margin-bottom:8px;">NIST Key Size Equivalence (NIST SP 800-57)</h4>
+                            <div class="comparison-bar">
+                                <div class="comparison-header">128-bit Security Level</div>
+                                <div class="bar-row">
+                                    <span class="bar-label">RSA</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill rsa-bar" style="--target-width:100%">
+                                            <span class="bar-value">3072 bits</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bar-row">
+                                    <span class="bar-label">ECC</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill ecc-bar" style="--target-width:8.3%">
+                                            <span class="bar-value">256 bits</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Symmetric (bits)</th>
+                                        <th>RSA Key (bits)</th>
+                                        <th>ECC Key (bits)</th>
+                                        <th>Size Ratio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>80</td><td>1024</td><td class="highlight-cell">160</td><td>6 : 1</td></tr>
+                                    <tr><td>112</td><td>2048</td><td class="highlight-cell">224</td><td>9 : 1</td></tr>
+                                    <tr class="row-highlight"><td>128 (Standard)</td><td>3072</td><td class="highlight-cell">256</td><td>12 : 1</td></tr>
+                                    <tr><td>192</td><td>7680</td><td class="highlight-cell">384</td><td>20 : 1</td></tr>
+                                    <tr><td>256 (Top Secret)</td><td>15360</td><td class="highlight-cell">512</td><td>30 : 1</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="use-case-chips" style="margin-top:14px;">
+                                <span class="chip">📱 Mobile Phones</span>
+                                <span class="chip">💳 Smart Cards / SIM</span>
+                                <span class="chip">📡 IoT Constrained Nodes</span>
+                                <span class="chip">🔒 Web Cryptography</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 4: WHAT IS AN ELLIPTIC CURVE? ===================== -->
+        <section class="slide" id="slide-4">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">04</span>
+                    <h2>What is an <span class="gradient-text">Elliptic Curve?</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">An intuitive, mathematical definition from first principles (Stallings Section 10.3).</p>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:20px; border-left: 4px solid var(--blue);">
+                            <h3 style="color:var(--blue); font-size:1.3rem; margin-bottom:10px;">1. It is a Non-Singular Cubic Plane Curve</h3>
+                            <p style="font-size:1.05rem; color:var(--text2); line-height:1.6;">
+                                An elliptic curve is the set of points \((x, y)\) satisfying a <strong>degree-3 cubic polynomial equation</strong> in two variables:
+                            </p>
+                            <div style="font-size:1.6rem; font-weight:800; color:var(--purple); text-align:center; margin:10px 0; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid var(--border);">
+                                \( y^2 = x^3 + ax + b \)
+                            </div>
+                            <p style="font-size:1.02rem; color:var(--text2); line-height:1.55;">
+                                • <strong>Not an Ellipse:</strong> The name originates from <em>elliptic integrals</em> used in seventeenth-century calculus to calculate the arc length of an ellipse.<br>
+                                • <strong>Degree 3:</strong> The highest exponent is 3 (cubic), which guarantees that any straight line intersects the curve at exactly <strong>three points</strong> (counting multiplicity).
+                            </p>
+                        </div>
+                        <div class="glass-card" style="margin-top:14px; padding:16px;">
+                            <h4 style="color:var(--text); font-size:1.15rem; margin-bottom:6px;">2. The Point at Infinity \(\mathcal{O}\)</h4>
+                            <p style="font-size:1rem; color:var(--text2); line-height:1.5;">
+                                In addition to ordinary Cartesian points \((x, y)\), the curve contains a single conceptual element denoted \(\mathcal{O}\) (the <strong>point at infinity</strong> or zero point). It resides in projective space at the top and bottom of every vertical line.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:20px; border-left: 4px solid var(--green);">
+                            <h3 style="color:var(--green); font-size:1.3rem; margin-bottom:10px;">3. Smoothness & Geometric Symmetry</h3>
+                            <ul class="bullet-list" style="font-size:1.02rem; line-height:1.6;">
+                                <li><strong>Symmetric about the x-axis:</strong> Since \(y = \pm\sqrt{x^3 + ax + b}\), for every point \((x, y)\) lying on the curve, its reflection \((x, -y)\) is also on the curve.</li>
+                                <li><strong>Non-Singular (No Cusps or Self-Crossings):</strong> The discriminant \(\Delta = -16(4a^3 + 27b^2) \neq 0\). This ensures a well-defined tangent line exists at every single point!</li>
+                                <li><strong>The Chord-and-Tangent Property:</strong> Because any straight line intersecting two points on a cubic must intersect a third point, we can turn the points on the curve into an algebraic group!</li>
+                            </ul>
+                        </div>
+                        <div class="img-container" style="margin-top:14px; text-align:center; padding:12px;">
+                            <img src="images/curve_shapes.png" alt="Elliptic Curve Geometry" style="width:100%; max-height:180px; object-fit:contain; border-radius:8px;">
+                            <p style="font-size:0.85rem; color:var(--yellow); font-weight:700; margin-top:6px;">Continuous Elliptic Curve Shapes over Real Numbers \(\mathbb{R}\)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 5: WHY IS IT USED? ===================== -->
+        <section class="slide" id="slide-5">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">05</span>
+                    <h2>Why are Elliptic Curves <span class="gradient-text">Used in Cryptography?</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Why do cryptographers choose elliptic curves over regular numbers or traditional groups?</p>
+                <div class="content-grid two-col">
+                    <div class="glass-card animate-in" style="padding:22px; border-top: 4px solid var(--blue);">
+                        <h3 style="color:var(--blue); font-size:1.3rem; margin-bottom:8px;">1. Natural Abelian Group Structure</h3>
+                        <p style="font-size:1.02rem; color:var(--text2); line-height:1.55; margin-bottom:10px;">
+                            Points on an elliptic curve naturally form an <strong>Abelian group</strong> under the geometric chord-and-tangent addition rule.
+                        </p>
+                        <ul class="bullet-list" style="font-size:0.98rem; line-height:1.5;">
+                            <li>Adding two points produces a third point on the curve (Closure).</li>
+                            <li>The operation is strictly associative and commutative.</li>
+                            <li>\(\mathcal{O}\) serves as the identity element (\(P + \mathcal{O} = P\)).</li>
+                            <li>Reflection provides an exact inverse: \(P + (-P) = \mathcal{O}\).</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card animate-in" style="padding:22px; border-top: 4px solid var(--purple);">
+                        <h3 style="color:var(--purple); font-size:1.3rem; margin-bottom:8px;">2. Exponential Hardness (No Sub-Exponential Shortcut)</h3>
+                        <p style="font-size:1.02rem; color:var(--text2); line-height:1.55; margin-bottom:10px;">
+                            In regular modular arithmetic (used by RSA and classic Diffie-Hellman), integers possess multiplicative structure that allows <strong>Index Calculus</strong> algorithms to break keys in sub-exponential time \(O(e^{\sqrt[3]{\ln n}})\).
+                        </p>
+                        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:10px; font-size:0.98rem; line-height:1.45;">
+                            <strong style="color:var(--pink);">The Elliptic Curve Advantage:</strong><br>
+                            Points on an elliptic curve have <strong>no analogue to prime factorization or index calculus</strong>! The fastest known attack is Pollard's rho, which takes fully exponential time \(O(\sqrt{p})\).
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card animate-in" style="margin-top:14px; padding:16px; border-left: 4px solid var(--green);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="font-size:1.15rem; color:var(--text);">Summary: Maximum Security per Bit of Key Length</strong>
+                            <p style="font-size:1rem; color:var(--text2); margin-top:2px;">
+                                Because there are no sub-exponential shortcuts, a <strong>256-bit ECC key</strong> delivers the exact same mathematical security as a <strong>3072-bit RSA key</strong>! This allows ultra-fast handshakes, negligible bandwidth, and seamless operation on battery-powered chips.
+                            </p>
+                        </div>
+                        <span class="chip" style="background:rgba(5,150,105,0.1); color:var(--green); font-weight:800; font-size:0.95rem; padding:8px 16px;">12× Smaller Keys</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 6: ABELIAN GROUPS ===================== -->
+        <section class="slide" id="slide-6">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">06</span>
+                    <h2>Abelian Groups — <span class="gradient-text">Mathematical Foundation</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">An <strong>Abelian group</strong> \(\{G, \bullet\}\) is a set \(G\) with a binary operation \(\bullet\) satisfying 5 fundamental axioms (Stallings Section 10.3).</p>
+                <div class="group-properties-grid">
+                    <div class="glass-card property-card animate-in">
+                        <div class="property-num">(A1)</div>
+                        <div class="property-name">Closure</div>
+                        <div class="property-formula">\( \forall\, a, b \in G: \; a \bullet b \in G \)</div>
+                        <p class="property-desc">Combining any two elements in \(G\) produces an element that also belongs to \(G\).</p>
+                    </div>
+                    <div class="glass-card property-card animate-in">
+                        <div class="property-num">(A2)</div>
+                        <div class="property-name">Associativity</div>
+                        <div class="property-formula">\( (a \bullet b) \bullet c = a \bullet (b \bullet c) \)</div>
+                        <p class="property-desc">Grouping of elements during successive operations does not alter the result.</p>
+                    </div>
+                    <div class="glass-card property-card animate-in">
+                        <div class="property-num">(A3)</div>
+                        <div class="property-name">Identity Element</div>
+                        <div class="property-formula">\( \exists\, e \in G: \; a \bullet e = e \bullet a = a \)</div>
+                        <p class="property-desc">There exists an element \(e\) that leaves any element unchanged under the operation.</p>
+                    </div>
+                    <div class="glass-card property-card animate-in">
+                        <div class="property-num">(A4)</div>
+                        <div class="property-name">Inverse Element</div>
+                        <div class="property-formula">\( \forall\, a \in G,\; \exists\, a' : \; a \bullet a' = e \)</div>
+                        <p class="property-desc">Every element \(a\) possesses a unique inverse \(a'\) that yields the identity \(e\).</p>
+                    </div>
+                    <div class="glass-card property-card highlight-card animate-in">
+                        <div class="property-num">(A5)</div>
+                        <div class="property-name">Commutativity <span class="tag-abelian">ABELIAN</span></div>
+                        <div class="property-formula">\( a \bullet b = b \bullet a \)</div>
+                        <p class="property-desc">The order of operands does not matter. Named after Niels Henrik Abel.</p>
+                    </div>
+                </div>
+                <div class="callout-box animate-in">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <span><strong>Cryptographic Mapping (Stallings):</strong> In Diffie-Hellman, the group operation is modular multiplication and exponentiation is repeated multiplication (\(a^k\)). In ECC, the operation is <strong>point addition</strong>, and multiplication is defined as <strong>repeated addition</strong>: \(kP = P + P + \cdots + P\).</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 7: REAL CURVES DEFINITION ===================== -->
+        <section class="slide" id="slide-7">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">07</span>
+                    <h2>Elliptic Curves over <span class="gradient-text">Real Numbers \(\mathbb{R}\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Weierstrass short form and non-singularity condition over real continuous coordinates.</p>
+                <div class="equation-showcase animate-in">
+                    <div class="big-equation">\( y^2 = x^3 + ax + b \)</div>
+                    <span class="eq-name">Weierstraß Equation (Short Form over \(\mathbb{R}\))</span>
+                </div>
+                <div class="content-grid two-col" style="margin-top: 14px;">
+                    <div class="info-list animate-in">
+                        <div class="info-item">
+                            <span class="info-icon">📐</span>
+                            <div>
+                                <strong>General Weierstraß Form</strong>
+                                <p>\(y^2 + axy + by = x^3 + cx^2 + dx + e\). Over fields with characteristic \(\neq 2, 3\), linear change of variables simplifies it to \(y^2 = x^3 + ax + b\).</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">♾️</span>
+                            <div>
+                                <strong>Point at Infinity \(\mathcal{O}\)</strong>
+                                <p>Acts as the identity element. Every vertical line intersects the curve at \((x, y)\), \((x, -y)\), and \(\mathcal{O}\).</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">🔄</span>
+                            <div>
+                                <strong>Non-Singularity Condition (Eq 10.2)</strong>
+                                <p><strong style="color:var(--pink);">\( 4a^3 + 27b^2 \neq 0 \)</strong>: Guarantees the cubic polynomial has distinct roots, eliminating self-intersections or cusps.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <div class="glass-card img-container" style="text-align:center; padding:12px;">
+                            <img src="images/elliptic_curve_shapes.png" alt="Stallings Fig 10.4 Elliptic Curves" style="width:100%; max-height:230px; object-fit:contain; border-radius:8px;">
+                            <p style="font-size:0.85rem; color:var(--yellow); margin-top:6px; font-weight:700;">Stallings Fig 10.4: Curves for (a) \(y^2 = x^3 - x\) and (b) \(y^2 = x^3 - x + 1\)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 8: 5 GEOMETRIC RULES ===================== -->
+        <section class="slide" id="slide-8">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">08</span>
+                    <h2>Geometric Addition — <span class="gradient-text">The 5 Fundamental Rules</span></h2>
+                </div>
+                <div class="core-rule animate-in">
+                    <span class="rule-badge">CHORD-AND-TANGENT LAW</span>
+                    <span>If three points on an elliptic curve lie on a straight line, their sum is \(\mathcal{O}\): \(P + Q + R = \mathcal{O} \implies P + Q = -R\).</span>
+                </div>
+                <div class="content-grid two-col" style="margin-top: 14px;">
+                    <div class="rules-container animate-in">
+                        <div class="rule-card">
+                            <span class="rule-num-badge">Rule 1</span>
+                            <div class="rule-body">
+                                <div class="rule-title">Identity Element \(\mathcal{O}\) <span class="rule-formula-inline">\(P + \mathcal{O} = P\)</span></div>
+                                <p class="rule-desc">\(\mathcal{O}\) serves as the additive identity. Thus \(\mathcal{O} = -\mathcal{O}\). For any point \(P\) on the curve, adding \(\mathcal{O}\) leaves \(P\) unchanged.</p>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <span class="rule-num-badge">Rule 2</span>
+                            <div class="rule-body">
+                                <div class="rule-title">Point Negation <span class="rule-formula-inline">\(-P = (x_P, -y_P)\)</span></div>
+                                <p class="rule-desc">The negative of \(P=(x, y)\) has the same x-coordinate but negated y-coordinate. Joined by a vertical line: \(P + (-P) = \mathcal{O}\).</p>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <span class="rule-num-badge">Rule 3</span>
+                            <div class="rule-body">
+                                <div class="rule-title">Distinct Points (\(x_P \neq x_Q\)) <span class="rule-formula-inline">\(P + Q = -R\)</span></div>
+                                <p class="rule-desc">Draw a straight secant line through \(P\) and \(Q\). It intersects the cubic curve at a unique 3rd point \(R\). The sum \(P+Q\) is the reflection of \(R\) across the x-axis.</p>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <span class="rule-num-badge">Rule 4</span>
+                            <div class="rule-body">
+                                <div class="rule-title">Vertical Line Case <span class="rule-formula-inline">\(P + (-P) = \mathcal{O}\)</span></div>
+                                <p class="rule-desc">If two points share the same x-coordinate (\(x_P = x_Q, y_P = -y_Q\)), the line is vertical and intersects at the point at infinity \(\mathcal{O}\).</p>
+                            </div>
+                        </div>
+                        <div class="rule-card">
+                            <span class="rule-num-badge">Rule 5</span>
+                            <div class="rule-body">
+                                <div class="rule-title">Point Doubling <span class="rule-formula-inline">\(2Q = Q + Q = -S\)</span></div>
+                                <p class="rule-desc">To add a point to itself, draw the <strong>tangent line</strong> at \(Q\). It intersects the curve at point \(S\). Reflect \(S\) across the x-axis to obtain \(2Q\).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="geo-visual animate-in">
+                        <canvas id="additionCanvas" width="480" height="230"></canvas>
+                        <div class="img-container" style="margin-top:10px; text-align:center; padding:8px;">
+                            <img src="images/point_addition_diagram.png" alt="Point Addition Diagram" style="width:100%; max-height:170px; object-fit:contain; border-radius:6px; display:block;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 9: POINT DOUBLING ===================== -->
+        <section class="slide" id="slide-9">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">09</span>
+                    <h2>Point Doubling — <span class="gradient-text">Tangent Construction \(2P\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">When adding a point to itself (\(P + P\)), the secant line becomes the <strong>tangent line</strong> (Stallings Section 10.3).</p>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:22px; border-left:4px solid var(--yellow);">
+                            <h3 style="color:var(--yellow); font-size:1.3rem; margin-bottom:10px;">The Tangent Geometric Law</h3>
+                            <p style="font-size:1.05rem; color:var(--text2); line-height:1.6;">
+                                As point \(Q \to P\), the secant line passing through \(P\) and \(Q\) approaches the <strong>tangent line</strong> to the elliptic curve at \(P\).
+                            </p>
+                            <div class="steps-list" style="margin-top:12px;">
+                                <div class="step-item">
+                                    <div class="step-num">1</div>
+                                    <div class="step-content">
+                                        <strong>Compute Tangent Slope \(\lambda\)</strong>
+                                        <p>Using implicit differentiation of \(y^2 = x^3 + ax + b\):<br>
+                                        \(2y \frac{dy}{dx} = 3x^2 + a \implies \lambda = \frac{3x_P^2 + a}{2y_P}\).</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-num">2</div>
+                                    <div class="step-content">
+                                        <strong>Find Second Intersection \(S\)</strong>
+                                        <p>The tangent touches \(P\) with multiplicity 2 and intersects the curve at exactly one other point \(S\).</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-num">3</div>
+                                    <div class="step-content">
+                                        <strong>Reflect Across the x-axis</strong>
+                                        <p>Reflecting point \(S = (x_S, y_S)\) yields the doubled point <strong>\(2P = -S = (x_S, -y_S)\)</strong>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <canvas id="doublingCanvas" width="480" height="230"></canvas>
+                        <div class="img-container" style="margin-top:10px; text-align:center; padding:8px;">
+                            <img src="images/point_doubling_diagram.png" alt="Point Doubling Diagram" style="width:100%; max-height:170px; object-fit:contain; border-radius:6px; display:block;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 10: ALGEBRAIC FORMULAS OVER R ===================== -->
+        <section class="slide" id="slide-10">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">10</span>
+                    <h2>Algebraic Formulas over <span class="gradient-text">Real Numbers \(\mathbb{R}\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">The geometric secant and tangent constructions translate directly into closed-form algebraic equations for computation.</p>
+                <div class="content-grid two-col formula-grid">
+                    <div class="glass-card formula-card animate-in">
+                        <div class="formula-badge addition-badge">Point Addition: \(P \neq Q\) (Equation 10.3)</div>
+                        <div class="formula-block">
+                            <div class="formula-line">
+                                <span class="formula-label">Slope \(\lambda\):</span>
+                                \( \lambda = \dfrac{y_Q - y_P}{x_Q - x_P} \)
+                            </div>
+                            <div class="formula-line">
+                                <span class="formula-label">\(x_R\):</span>
+                                \( x_R = \lambda^2 - x_P - x_Q \)
+                            </div>
+                            <div class="formula-line">
+                                <span class="formula-label">\(y_R\):</span>
+                                \( y_R = \lambda(x_P - x_R) - y_P \)
+                            </div>
+                        </div>
+                        <p class="formula-note">\(\lambda\) is the slope of the <strong>secant line</strong> through distinct points \(P\) and \(Q\).</p>
+                    </div>
+                    <div class="glass-card formula-card animate-in">
+                        <div class="formula-badge doubling-badge">Point Doubling: \(P = Q\) (Equation 10.4)</div>
+                        <div class="formula-block">
+                            <div class="formula-line">
+                                <span class="formula-label">Slope \(\lambda\):</span>
+                                \( \lambda = \dfrac{3x_P^2 + a}{2y_P} \)
+                            </div>
+                            <div class="formula-line">
+                                <span class="formula-label">\(x_R\):</span>
+                                \( x_R = \lambda^2 - 2x_P \)
+                            </div>
+                            <div class="formula-line">
+                                <span class="formula-label">\(y_R\):</span>
+                                \( y_R = \lambda(x_P - x_R) - y_P \)
+                            </div>
+                        </div>
+                        <p class="formula-note">\(\lambda\) is the slope of the <strong>tangent line</strong> at \(P\), found via implicit differentiation \(\frac{d}{dx}(y^2 = x^3 + ax + b)\).</p>
+                    </div>
+                </div>
+                <div class="callout-box highlight-callout animate-in">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span><strong>Uniformity:</strong> The coordinate equation \(y_R = \lambda(x_P - x_R) - y_P\) is identical for both addition and doubling! Only the computation of \(\lambda\) and \(x_R\) changes.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 11: TWO CRYPTOGRAPHIC FAMILIES ===================== -->
+        <section class="slide" id="slide-11">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">11</span>
+                    <h2>Two Cryptographic Families — <span class="gradient-text">\(\mathbb{Z}_p\) vs. \(GF(2^m)\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">For cryptography, real numbers cannot be used due to rounding errors. Variables and coefficients are restricted to <strong>finite fields</strong>.</p>
+                <div class="content-grid two-col" style="margin-top: 14px;">
+                    <div class="glass-card animate-in" style="border-top: 4px solid var(--blue);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="color:var(--blue); font-size:1.35rem;">1. Prime Curves over \(\mathbb{Z}_p\)</h3>
+                            <span class="chip" style="background:rgba(37,99,235,0.1); color:var(--blue);">Software Optimized</span>
+                        </div>
+                        <ul class="bullet-list">
+                            <li><strong>Field Elements:</strong> Integers from \(0\) through \(p-1\) (where \(p\) is an odd prime).</li>
+                            <li><strong>Arithmetic:</strong> Standard integer addition & multiplication modulo \(p\).</li>
+                            <li><strong>Curve Equation:</strong> \(y^2 \equiv x^3 + ax + b \pmod p\).</li>
+                            <li><strong>Why Best for Software?</strong> (Stallings): Standard 64-bit processors have dedicated integer ALUs. Prime field modular arithmetic executes efficiently without requiring specialized bit-level manipulation.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card animate-in" style="border-top: 4px solid var(--purple);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="color:var(--purple); font-size:1.35rem;">2. Binary Curves over \(GF(2^m)\)</h3>
+                            <span class="chip" style="background:rgba(124,58,237,0.1); color:var(--purple);">Hardware Optimized</span>
+                        </div>
+                        <ul class="bullet-list">
+                            <li><strong>Field Elements:</strong> \(2^m\) binary polynomials of degree \(< m\).</li>
+                            <li><strong>Arithmetic:</strong> Polynomial addition (bitwise XOR) and reduction modulo an irreducible polynomial.</li>
+                            <li><strong>Curve Equation:</strong> \(y^2 + xy = x^3 + ax^2 + b\).</li>
+                            <li><strong>Why Best for Hardware?</strong> (Stallings): Addition requires <strong>no carry propagation</strong> (just simple XOR gates). A compact, fast cryptosystem can be built with remarkably few logic gates in smart cards & FPGAs!</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="callout-box animate-in" style="margin-top:16px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    <span>Stallings notes: <em>"There is no obvious geometric interpretation of elliptic curve arithmetic over finite fields. The algebraic interpretation used for real numbers readily carries over, and this is the approach taken."</em></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 12: CURVES OVER Z_p ===================== -->
+        <section class="slide" id="slide-12">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">12</span>
+                    <h2>Elliptic Curves over <span class="gradient-text">Prime Field \(\mathbb{Z}_p\)</span></h2>
+                </div>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="equation-box">
+                            \( y^2 \equiv x^3 + ax + b \pmod{p} \)
+                        </div>
+                        <div class="glass-card" style="margin-top:12px; padding:16px;">
+                            <h4 style="color:var(--text); font-size:1.15rem; margin-bottom:8px;">Set Definition: \(E_p(a, b)\)</h4>
+                            <p style="font-size:1.02rem; color:var(--text2); line-height:1.5;">
+                                The set \(E_p(a, b)\) consists of all pairs of integers \((x, y) \in \mathbb{Z}_p \times \mathbb{Z}_p\) that satisfy the congruence, together with the <strong>point at infinity \(\mathcal{O}\)</strong>.
+                            </p>
+                            <div style="margin-top:10px; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--border);">
+                                <strong style="color:var(--pink);">Non-Singularity Condition (Equation 10.6):</strong><br>
+                                \( (4a^3 + 27b^2) \bmod p \neq 0 \)
+                            </div>
+                        </div>
+                        <div class="glass-card" style="margin-top:12px; padding:16px;">
+                            <h4 style="color:var(--blue); font-size:1.1rem; margin-bottom:6px;">Number of Points — Hasse's Theorem</h4>
+                            <div style="font-size:1.15rem; font-weight:800; color:var(--purple); text-align:center; margin:6px 0;">
+                                \( p + 1 - 2\sqrt{p} \le N \le p + 1 + 2\sqrt{p} \)
+                            </div>
+                            <p style="font-size:0.95rem; color:var(--text2); text-align:center;">
+                                For \(p = 23\): \(15 \le N \le 33\). The actual number of points on \(E_{23}(1, 1)\) is \(N = 28\) (27 grid pairs + \(\mathcal{O}\)).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <div class="finite-field-visual img-container">
+                            <img src="images/figure_10_5_e23.png" alt="Stallings Fig 10.5 E23(1,1)" style="width:100%; max-height:240px; object-fit:contain; border-radius:8px; border:1px solid var(--border);">
+                            <div class="canvas-label" style="margin-top:6px; text-align:center; font-weight:700; color:var(--yellow); font-size:0.88rem;">Stallings Fig 10.5 — Points on \(E_{23}(1,1)\), Symmetric about \(y = 11.5\)</div>
+                        </div>
+                        <div class="glass-card" style="margin-top:10px; padding:10px;">
+                            <h4 style="font-size:0.85rem; color:var(--blue); text-align:center; margin-bottom:4px;">Stallings Table 10.1 — All 27 Points on \(E_{23}(1,1)\) + \(\mathcal{O}\)</h4>
+                            <p style="font-size:0.75rem; color:var(--text2); text-align:center; line-height:1.45; font-family:var(--mono);">
+                                (0,1), (0,22), (1,7), (1,16), (3,10), (3,13), (4,0), (5,4), (5,19), (6,4), (6,19), (7,11), (7,12), (9,7), (9,16), (11,3), (11,20), (12,4), (12,19), (13,7), (13,16), (17,3), (17,20), (18,3), (18,20), (19,5), (19,18), and \(\mathcal{O}\)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 13: ARITHMETIC RULES OVER Z_p ===================== -->
+        <section class="slide" id="slide-13">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">13</span>
+                    <h2>Arithmetic Rules & <span class="gradient-text">Slope Formulas over \(\mathbb{Z}_p\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">The four formal algebraic addition rules governing the finite abelian group \(E_p(a, b)\) (Stallings Section 10.3).</p>
+                <div class="rules-container animate-in">
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 1</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Additive Identity <span class="rule-formula-inline">\(P + \mathcal{O} = P\)</span></div>
+                            <p class="rule-desc">\(\mathcal{O}\) serves as the identity element for all points \(P \in E_p(a, b)\).</p>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 2</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Negation <span class="rule-formula-inline">\(-P = (x_P, -y_P \bmod p) = (x_P, p - y_P)\)</span></div>
+                            <p class="rule-desc">If \(P = (x_P, y_P)\), then \(P + (x_P, -y_P) = \mathcal{O}\).<br>
+                            <em>Book Example:</em> In \(E_{23}(1, 1)\), for \(P = (13, 7)\), we have \(-P = (13, -7) = (13, 16)\) because \(-7 \bmod 23 = 16\). Note \((13, 16) \in E_{23}(1, 1)\).</p>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 3</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Addition (\(P \neq Q, P \neq -Q\)) <span class="rule-formula-inline">\(R = P + Q = (x_R, y_R)\)</span></div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Slope \(\lambda\):</strong><br>
+                                    \( \lambda = \left(\dfrac{y_Q - y_P}{x_Q - x_P}\right) \bmod p = (y_Q - y_P)(x_Q - x_P)^{-1} \bmod p \)
+                                </div>
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Coordinates \((x_R, y_R)\):</strong><br>
+                                    \( x_R = (\lambda^2 - x_P - x_Q) \bmod p \)<br>
+                                    \( y_R = (\lambda(x_P - x_R) - y_P) \bmod p \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 4</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Doubling (\(P = Q, y_P \neq 0\)) <span class="rule-formula-inline">\(R = 2P = (x_R, y_R)\)</span></div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Tangent Slope \(\lambda\):</strong><br>
+                                    \( \lambda = \left(\dfrac{3x_P^2 + a}{2y_P}\right) \bmod p = (3x_P^2 + a)(2y_P)^{-1} \bmod p \)
+                                </div>
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Coordinates \((x_R, y_R)\):</strong><br>
+                                    \( x_R = (\lambda^2 - 2x_P) \bmod p \)<br>
+                                    \( y_R = (\lambda(x_P - x_R) - y_P) \bmod p \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 14: WORKED EXAMPLE 1 (ADDITION) ===================== -->
+        <section class="slide" id="slide-14">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">14</span>
+                    <h2>Worked Numerical Example 1 — <span class="gradient-text">Point Addition \(P + Q\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Complete step-by-step evaluation on curve \(E_{23}(1,1): \; y^2 \equiv x^3 + x + 1 \pmod{23}\) (Stallings Section 10.3).</p>
+                <div class="spacious-example-card animate-in">
+                    <div class="example-header-bar">
+                        <div>
+                            <span style="font-family:var(--mono); font-weight:800; color:var(--text3); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;">Given Points</span>
+                            <div style="font-size:1.35rem; font-weight:800; color:var(--blue); margin-top:2px;">\(P = (3, 10), \quad Q = (9, 7) \quad \text{on } E_{23}(1, 1)\)</div>
+                        </div>
+                        <span class="chip" style="background:rgba(37,99,235,0.1); color:var(--blue); font-weight:800;">Distinct Points (\(P \neq Q\))</span>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 1</span>
+                        <div class="step-math">
+                            <strong>Formulate Slope \(\lambda\):</strong>
+                            <div style="margin:6px 0; font-size:1.25rem; color:var(--purple); font-weight:700;">
+                                \( \lambda = \left(\dfrac{y_Q - y_P}{x_Q - x_P}\right) \bmod 23 = \left(\dfrac{7 - 10}{9 - 3}\right) \bmod 23 = \left(\dfrac{-3}{6}\right) \bmod 23 = \left(\dfrac{-1}{2}\right) \bmod 23 \)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 2</span>
+                        <div class="step-math">
+                            <strong>Modular Multiplicative Inversion (Extended Euclidean Algorithm):</strong>
+                            <p style="margin-top:4px;">We need \(6^{-1} \bmod 23\). Since \(6 \times 4 = 24 \equiv 1 \pmod{23}\), the inverse is \(6^{-1} \equiv 4\).</p>
+                            <div style="margin:6px 0; font-size:1.25rem; color:var(--yellow); font-weight:800;">
+                                \( \lambda = (-3) \times 4 \bmod 23 = -12 \bmod 23 = 11 \)
+                            </div>
+                            <div class="step-note-box">Alternative verification: with \(\frac{-1}{2}\), since \(2 \times 12 = 24 \equiv 1\), \(2^{-1} = 12\). Then \((-1)(12) \equiv -12 \equiv 11 \pmod{23}\).</div>
+                        </div>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 3</span>
+                        <div class="step-math">
+                            <strong>Calculate Coordinates \((x_R, y_R)\):</strong>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+                                <div style="background:#ffffff; padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                                    <strong>\(x_R\) Calculation:</strong><br>
+                                    \( x_R = (\lambda^2 - x_P - x_Q) \bmod 23 \)<br>
+                                    \( x_R = (11^2 - 3 - 9) \bmod 23 \)<br>
+                                    \( x_R = (121 - 12) \bmod 23 = 109 \bmod 23 = \mathbf{17} \)
+                                </div>
+                                <div style="background:#ffffff; padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                                    <strong>\(y_R\) Calculation:</strong><br>
+                                    \( y_R = (\lambda(x_P - x_R) - y_P) \bmod 23 \)<br>
+                                    \( y_R = (11(3 - 17) - 10) \bmod 23 \)<br>
+                                    \( y_R = (11(-14) - 10) = -164 \bmod 23 = \mathbf{20} \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grand-result-card">
+                        <span>Final Point Sum:</span>
+                        <span>\(P + Q = (17, 20) \in E_{23}(1, 1)\) ✓</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 15: WORKED EXAMPLE 2 (DOUBLING) ===================== -->
+        <section class="slide" id="slide-15">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">15</span>
+                    <h2>Worked Numerical Example 2 — <span class="gradient-text">Point Doubling \(2P\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Complete step-by-step evaluation on curve \(E_{23}(1,1): \; y^2 \equiv x^3 + x + 1 \pmod{23}\) with \(a=1, b=1, p=23\).</p>
+                <div class="spacious-example-card animate-in">
+                    <div class="example-header-bar">
+                        <div>
+                            <span style="font-family:var(--mono); font-weight:800; color:var(--text3); font-size:0.9rem; text-transform:uppercase; letter-spacing:1px;">Given Point</span>
+                            <div style="font-size:1.35rem; font-weight:800; color:var(--purple); margin-top:2px;">\(P = (3, 10), \quad \text{Compute } 2P = P + P\)</div>
+                        </div>
+                        <span class="chip" style="background:rgba(217,119,6,0.1); color:var(--yellow); font-weight:800;">Tangent Slope (\(P = Q\))</span>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 1</span>
+                        <div class="step-math">
+                            <strong>Formulate Tangent Slope \(\lambda\):</strong>
+                            <div style="margin:6px 0; font-size:1.25rem; color:var(--purple); font-weight:700;">
+                                \( \lambda = \left(\dfrac{3x_P^2 + a}{2y_P}\right) \bmod 23 = \left(\dfrac{3(3^2) + 1}{2 \times 10}\right) \bmod 23 = \left(\dfrac{27 + 1}{20}\right) \bmod 23 = \left(\dfrac{28}{20}\right) \bmod 23 \)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 2</span>
+                        <div class="step-math">
+                            <strong>Modular Inversion & Simplification:</strong>
+                            <p style="margin-top:4px;">Notice \(28 \bmod 23 = 5\), so \(\lambda = \left(\frac{5}{20}\right) \bmod 23 = \left(\frac{1}{4}\right) \bmod 23\).</p>
+                            <p style="margin-top:2px;">Since \(4 \times 6 = 24 \equiv 1 \pmod{23}\), the modular inverse is \(4^{-1} \equiv 6\).</p>
+                            <div style="margin:6px 0; font-size:1.25rem; color:var(--yellow); font-weight:800;">
+                                \( \lambda = 1 \times 6 \bmod 23 = \mathbf{6} \)
+                            </div>
+                            <div class="step-note-box">Book verification: \(20^{-1} \bmod 23 = 15\) (since \(20 \times 15 = 300 = 13 \times 23 + 1 \equiv 1\)). Then \(28 \times 15 = 420 = 18 \times 23 + 6 \equiv 6 \pmod{23}\). Both methods yield \(\lambda = 6\)!</div>
+                        </div>
+                    </div>
+
+                    <div class="spacious-calc-step">
+                        <span class="step-indicator">Step 3</span>
+                        <div class="step-math">
+                            <strong>Calculate Coordinates \((x_R, y_R)\):</strong>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px;">
+                                <div style="background:#ffffff; padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                                    <strong>\(x_R\) Calculation:</strong><br>
+                                    \( x_R = (\lambda^2 - 2x_P) \bmod 23 \)<br>
+                                    \( x_R = (6^2 - 2(3)) \bmod 23 \)<br>
+                                    \( x_R = (36 - 6) \bmod 23 = 30 \bmod 23 = \mathbf{7} \)
+                                </div>
+                                <div style="background:#ffffff; padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
+                                    <strong>\(y_R\) Calculation:</strong><br>
+                                    \( y_R = (\lambda(x_P - x_R) - y_P) \bmod 23 \)<br>
+                                    \( y_R = (6(3 - 7) - 10) \bmod 23 \)<br>
+                                    \( y_R = (6(-4) - 10) = -34 \bmod 23 = \mathbf{12} \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grand-result-card" style="border-color:var(--blue); color:var(--blue); background:rgba(37,99,235,0.08);">
+                        <span>Final Doubled Point:</span>
+                        <span>\(2P = (7, 12) \in E_{23}(1, 1)\) ✓</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 16: BINARY FIELDS GF(2^m) ===================== -->
+        <section class="slide" id="slide-16">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">16</span>
+                    <h2>Elliptic Curves over <span class="gradient-text">Binary Fields \(GF(2^m)\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Finite fields with characteristic 2: where arithmetic is defined over polynomials with coefficients in \(\{0, 1\}\) (Stallings Section 10.3).</p>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="equation-box">
+                            \( y^2 + xy = x^3 + ax^2 + b \)
+                        </div>
+                        <p class="eq-name" style="text-align:center; margin-top:-6px; margin-bottom:10px;">Weierstraß Equation for Characteristic 2</p>
+
+                        <div class="glass-card" style="padding:14px;">
+                            <h4 style="color:var(--purple); font-size:1.1rem; margin-bottom:4px;">Non-Singularity Condition for \(GF(2^m)\)</h4>
+                            <div style="font-size:1.4rem; font-weight:800; color:var(--pink); text-align:center; margin:4px 0;">
+                                \( b \neq 0 \)
+                            </div>
+                            <p style="font-size:0.95rem; color:var(--text2); text-align:center;">If \(b = 0\), the curve is singular (has a node or cusp).</p>
+                        </div>
+
+                        <div class="glass-card" style="margin-top:10px; padding:12px;">
+                            <h4 style="color:var(--blue); font-size:1.05rem; margin-bottom:4px;">Concrete Field Example: \(GF(2^4)\)</h4>
+                            <p style="font-size:0.9rem; color:var(--text2); line-height:1.4;">
+                                Irreducible polynomial: \(f(x) = x^4 + x + 1\). Generator \(g\) satisfies \(f(g) = 0 \implies g^4 = g + 1 = 0011_2\).
+                            </p>
+                            <div class="gf-powers-grid">
+                                <div class="gf-power-cell"><span class="g-pow">\(g^0\)</span><span class="g-bin">0001</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^1\)</span><span class="g-bin">0010</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^2\)</span><span class="g-bin">0100</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^3\)</span><span class="g-bin">1000</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^4\)</span><span class="g-bin">0011</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^5\)</span><span class="g-bin">0110</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^6\)</span><span class="g-bin">1100</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^7\)</span><span class="g-bin">1011</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^8\)</span><span class="g-bin">0101</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^9\)</span><span class="g-bin">1010</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{10}\)</span><span class="g-bin">0111</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{11}\)</span><span class="g-bin">1110</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{12}\)</span><span class="g-bin">1111</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{13}\)</span><span class="g-bin">1101</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{14}\)</span><span class="g-bin">1001</span></div>
+                                <div class="gf-power-cell"><span class="g-pow">\(g^{15}\)</span><span class="g-bin">0001</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:14px;">
+                            <h4 style="color:var(--text); font-size:1.1rem; margin-bottom:4px;">Concrete Curve: \(E_{2^4}(g^4, 1)\)</h4>
+                            <p style="font-size:0.92rem; color:var(--text2); margin-bottom:6px;">
+                                Parameters: \(a = g^4, \; b = g^0 = 1\). Equation: \(y^2 + xy = x^3 + g^4x^2 + 1\).
+                            </p>
+                            <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border); font-size:0.86rem; line-height:1.45;">
+                                <strong>Point Verification for \((g^5, g^3)\):</strong><br>
+                                LHS: \((g^3)^2 + (g^5)(g^3) = g^6 + g^8 = 1100_2 \oplus 0101_2 = \mathbf{1001_2}\)<br>
+                                RHS: \((g^5)^3 + g^4(g^5)^2 + 1 = g^{15} + g^{14} + 1 = 0001_2 \oplus 1001_2 \oplus 0001_2 = \mathbf{1001_2}\)<br>
+                                <span style="color:var(--green); font-weight:800;">LHS = RHS = 1001₂ ✓ Point lies on the curve!</span>
+                            </div>
+                        </div>
+
+                        <div class="img-container" style="margin-top:10px; text-align:center; padding:8px;">
+                            <img src="images/figure_10_6_binary_curve.png" alt="Stallings Fig 10.6 E24(g4,1)" style="width:100%; max-height:210px; object-fit:contain; border-radius:6px;">
+                            <p style="font-size:0.85rem; color:var(--yellow); font-weight:700; margin-top:4px;">Stallings Fig 10.6 — The Elliptic Curve \(E_{2^4}(g^4, 1)\) (16 Points)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 17: ARITHMETIC RULES OVER GF(2^m) ===================== -->
+        <section class="slide" id="slide-17">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">17</span>
+                    <h2>Arithmetic Rules & <span class="gradient-text">Slope Formulas over \(GF(2^m)\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Addition rules and coordinate equations for \(E_{2^m}(a, b)\) (Stallings Section 10.3, Equations p. 9–10).</p>
+                <div class="rules-container animate-in">
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 1</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Additive Identity <span class="rule-formula-inline">\(P + \mathcal{O} = P\)</span></div>
+                            <p class="rule-desc">\(\mathcal{O}\) serves as the identity element for all points in \(E_{2^m}(a, b)\).</p>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 2</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Negation in Char 2 <span class="rule-formula-inline">\(-P = (x_P, \; x_P + y_P)\)</span></div>
+                            <p class="rule-desc">
+                                If \(P = (x_P, y_P)\), then \(P + (x_P, x_P + y_P) = \mathcal{O}\).<br>
+                                <strong style="color:var(--pink);">Crucial Difference from \(\mathbb{Z}_p\):</strong> In characteristic 2, \(-1 = +1\). The negative of \(P\) is <em>not</em> \((x, -y)\), but \((x_P, x_P + y_P)\) because reflection across the line \(x\) negates \(y\) via \(y + (x + y) = x\).
+                            </p>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 3</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Addition (\(P \neq Q, P \neq -Q\)) <span class="rule-formula-inline">\(R = P + Q = (x_R, y_R)\)</span></div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Slope \(\lambda\):</strong><br>
+                                    \( \lambda = \dfrac{y_Q + y_P}{x_Q + x_P} \)
+                                </div>
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Coordinates \((x_R, y_R)\):</strong><br>
+                                    \( x_R = \lambda^2 + \lambda + x_P + x_Q + a \)<br>
+                                    \( y_R = \lambda(x_P + x_R) + x_R + y_P \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rule-card">
+                        <span class="rule-num-badge">Rule 4</span>
+                        <div class="rule-body">
+                            <div class="rule-title">Point Doubling (\(P = Q\)) <span class="rule-formula-inline">\(R = 2P = (x_R, y_R)\)</span></div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:6px;">
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Doubling Slope \(\lambda\):</strong><br>
+                                    \( \lambda = x_P + \dfrac{y_P}{x_P} \)
+                                </div>
+                                <div style="background:#f8fafc; padding:8px 12px; border-radius:6px; border:1px solid var(--border);">
+                                    <strong>Coordinates \((x_R, y_R)\):</strong><br>
+                                    \( x_R = \lambda^2 + \lambda + a \)<br>
+                                    \( y_R = x_P^2 + (\lambda + 1)x_R \)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 18: MASTER COMPARISON ===================== -->
+        <section class="slide" id="slide-18">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">18</span>
+                    <h2>Master Comparison — <span class="gradient-text">\(\mathbb{Z}_p\) vs. \(GF(2^m)\)</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Side-by-side architectural and formula comparison of the two ECC cryptographic curve families.</p>
+                <div class="comparison-table-wrapper animate-in">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th class="td-feature">Property</th>
+                                <th class="th-prime">Prime Curves \(\mathbb{Z}_p\)</th>
+                                <th class="th-binary">Binary Curves \(GF(2^m)\)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="td-feature">Field Elements</td>
+                                <td>Integers \(\{0, 1, \dots, p-1\}\) (odd prime \(p\))</td>
+                                <td>Polynomials of degree \(< m\) with binary bits</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Curve Equation</td>
+                                <td style="font-weight:700; color:var(--blue);">\( y^2 \equiv x^3 + ax + b \pmod p \)</td>
+                                <td style="font-weight:700; color:var(--purple);">\( y^2 + xy = x^3 + ax^2 + b \)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Singularity Check</td>
+                                <td>\((4a^3 + 27b^2) \bmod p \neq 0\)</td>
+                                <td>\(b \neq 0\)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Point Negation \(-P\)</td>
+                                <td>\((x_P, \; p - y_P)\)</td>
+                                <td>\((x_P, \; x_P + y_P)\)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Addition Slope \(\lambda\)</td>
+                                <td>\( \lambda = \left(\frac{y_Q - y_P}{x_Q - x_P}\right) \bmod p \)</td>
+                                <td>\( \lambda = \frac{y_Q + y_P}{x_Q + x_P} \)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Doubling Slope \(\lambda\)</td>
+                                <td>\( \lambda = \left(\frac{3x_P^2 + a}{2y_P}\right) \bmod p \)</td>
+                                <td>\( \lambda = x_P + \frac{y_P}{x_P} \)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Sum \(x_R\) Formula</td>
+                                <td>\(x_R = (\lambda^2 - x_P - x_Q) \bmod p\)</td>
+                                <td>\(x_R = \lambda^2 + \lambda + x_P + x_Q + a\)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Doubling \(x_R\)</td>
+                                <td>\(x_R = (\lambda^2 - 2x_P) \bmod p\)</td>
+                                <td>\(x_R = \lambda^2 + \lambda + a\)</td>
+                            </tr>
+                            <tr>
+                                <td class="td-feature">Primary Hardware Target</td>
+                                <td><strong>Software implementations</strong> (CPUs, Servers)</td>
+                                <td><strong>Hardware implementations</strong> (Smart cards, ASICs, FPGAs)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 19: SCALAR MULTIPLICATION ===================== -->
+        <section class="slide" id="slide-19">
+            <div class="slide-content">
+                <div class="slide-header animate-in">
+                    <span class="slide-number">19</span>
+                    <h2>Scalar Multiplication & <span class="gradient-text">The Double-and-Add Algorithm</span></h2>
+                </div>
+                <p class="slide-subtitle animate-in">Scalar multiplication \(kP\) is the core engine of ECC — computing \(kP\) efficiently in \(O(\log_2 k)\) operations.</p>
+                <div class="content-grid two-col">
+                    <div class="animate-in">
+                        <div class="glass-card content-card">
+                            <div class="card-icon red">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 15h0"/><path d="M16 15h0"/><path d="M9.5 9h.01"/><path d="M14.5 9h.01"/></svg>
+                            </div>
+                            <h3>🐢 Naïve Method vs. 🐇 Double-and-Add</h3>
+                            <p>To compute \(kP = \underbrace{P + P + \cdots + P}_{k\text{ times}}\):</p>
+                            <ul class="bullet-list">
+                                <li><strong>Naïve:</strong> Performing \(k-1\) point additions takes \(O(k)\) time. For 256-bit \(k \approx 2^{256}\), this requires more steps than atoms in the universe!</li>
+                                <li><strong>Double-and-Add:</strong> Express \(k\) in binary, scanning bits from MSB to LSB. Always double; add \(P\) only when the bit is 1.</li>
+                            </ul>
+                            <div class="callout-box" style="margin-top:10px;">
+                                <span>Complexity drops from \(2^{256}\) to just ~<strong>256 doublings + 128 additions</strong>!</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-in">
+                        <div class="glass-card" style="padding:20px;">
+                            <h4 style="margin-bottom:10px; color:var(--blue);">Step-by-Step Example: Compute \(21P\) (\(21 = 10101_2\))</h4>
+                            <table class="data-table da-table">
+                                <thead>
+                                    <tr><th>Bit</th><th>Operation</th><th>Accumulator Result</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>1 (MSB)</strong></td><td>Initialize</td><td>\(P\)</td></tr>
+                                    <tr><td><strong>0</strong></td><td>Double</td><td>\(2P\)</td></tr>
+                                    <tr><td><strong>1</strong></td><td>Double, Add \(P\)</td><td>\(4P + P = 5P\)</td></tr>
+                                    <tr><td><strong>0</strong></td><td>Double</td><td>\(10P\)</td></tr>
+                                    <tr><td><strong>1 (LSB)</strong></td><td>Double, Add \(P\)</td><td>\(20P + P = 21P\)</td></tr>
+                                </tbody>
+                            </table>
+                            <p style="text-align:center; margin-top:12px; font-size:0.95rem; color:var(--green); font-weight:800;">
+                                Exactly 4 doublings + 2 additions instead of 20 additions!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== SLIDE 20: SUMMARY ===================== -->
+        <section class="slide" id="slide-20">
+            <div class="slide-bg-decoration">
+                <div class="deco-circle deco-1"></div>
+                <div class="deco-circle deco-2"></div>
+            </div>
+            <div class="slide-content summary-slide">
+                <div class="slide-header animate-in" style="justify-content:center;">
+                    <span class="slide-number">20</span>
+                    <h2>Summary & <span class="gradient-text">Conclusion</span></h2>
+                </div>
+                <div class="summary-grid">
+                    <div class="glass-card summary-item animate-in">
+                        <span class="summary-icon">🔑</span>
+                        <div>
+                            <strong>Smaller Keys, Equal Security</strong>
+                            <p>ECC delivers identical cryptographic strength to RSA with <strong>10–30× smaller key sizes</strong>, dramatically cutting compute and bandwidth costs.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card summary-item animate-in">
+                        <span class="summary-icon">📐</span>
+                        <div>
+                            <strong>Rigorous Group Structure</strong>
+                            <p>Points on elliptic curves form an <strong>Abelian group</strong> satisfying all 5 axioms under chord-and-tangent geometric rules and algebraic formulas.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card summary-item animate-in">
+                        <span class="summary-icon">🔢</span>
+                        <div>
+                            <strong>Two Cryptographic Families</strong>
+                            <p><strong>\(\mathbb{Z}_p\)</strong> (Prime Curves) for software efficiency; <strong>\(GF(2^m)\)</strong> (Binary Curves) for carry-free, ultra-compact hardware implementations.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card summary-item animate-in">
+                        <span class="summary-icon">🔒</span>
+                        <div>
+                            <strong>Exponential Hardness</strong>
+                            <p>With no sub-exponential index calculus attacks, elliptic curve arithmetic provides the gold standard of modern public-key cryptography.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="thank-you animate-in">
+                    <h2 class="gradient-text">Thank You!</h2>
+                    <p class="questions-text">Questions & Discussion</p>
+                </div>
+                <div class="reference-line animate-in">
+                    <em>Reference: Cryptography and Network Security — William Stallings (Chapter 10: Elliptic Curve Arithmetic)</em>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end slides-container -->
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint" id="keyboardHint">
+        Use <kbd>←</kbd> <kbd>→</kbd> arrow keys, <kbd>Space</kbd>, or click arrows to navigate
+    </div>
+
+    <script src="presentation.js?v=light_v4"></script>
+</body>
+</html>
